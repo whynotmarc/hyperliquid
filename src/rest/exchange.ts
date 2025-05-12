@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { RateLimiter } from '../utils/rateLimiter';
-import { HttpApi } from '../utils/helpers';
+import { HttpApi, processChainId } from '../utils/helpers';
 import { InfoAPI } from './info';
 import {
   signL1Action,
@@ -402,14 +402,21 @@ export class ExchangeAPI {
       throw error;
     }
   }
+
   //Transfer SPOT assets i.e PURR to another wallet (doesn't touch bridge, so no fees)
-  async spotTransfer(destination: string, token: string, amount: string): Promise<any> {
+  async spotTransfer(
+    destination: string,
+    token: string,
+    amount: string,
+    chainId: string = this.IS_MAINNET ? CHAIN_IDS.ARBITRUM_MAINNET : CHAIN_IDS.ARBITRUM_TESTNET
+  ): Promise<any> {
     await this.parent.ensureInitialized();
+
     try {
       const action = {
         type: ExchangeType.SPOT_SEND,
         hyperliquidChain: this.IS_MAINNET ? 'Mainnet' : 'Testnet',
-        signatureChainId: this.IS_MAINNET ? CHAIN_IDS.ARBITRUM_MAINNET : CHAIN_IDS.ARBITRUM_TESTNET,
+        signatureChainId: chainId,
         destination,
         token,
         amount,
@@ -426,7 +433,8 @@ export class ExchangeAPI {
           { name: 'time', type: 'uint64' },
         ],
         'HyperliquidTransaction:SpotSend',
-        this.IS_MAINNET
+        this.IS_MAINNET,
+        processChainId(chainId)
       );
 
       const payload = { action, nonce: action.time, signature };

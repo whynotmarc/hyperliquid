@@ -93,13 +93,14 @@ export async function signUserSignedAction(
   action: any,
   payloadTypes: Array<{ name: string; type: string }>,
   primaryType: string,
-  isMainnet: boolean
+  isMainnet: boolean,
+  chainId?: number
 ): Promise<Signature> {
   const data = {
     domain: {
       name: 'HyperliquidSignTransaction',
       version: '1',
-      chainId: isMainnet ? 42161 : 421614,
+      chainId: chainId !== undefined ? chainId : isMainnet ? 42161 : 421614,
       verifyingContract: '0x0000000000000000000000000000000000000000',
     },
     types: {

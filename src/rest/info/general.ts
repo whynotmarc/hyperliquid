@@ -89,16 +89,29 @@ export class GeneralInfoAPI {
     user: string,
     startTime: number,
     endTime?: number,
+    aggregateByTime?: boolean,
     rawResponse: boolean = false
   ): Promise<UserFills> {
-    let params: { user: string; startTime: number; type: string; endTime?: number } = {
+    let params: {
+      user: string;
+      startTime: number;
+      type: string;
+      reversed: boolean;
+      endTime?: number;
+      aggregateByTime?: boolean;
+    } = {
       user: user,
       startTime: Math.round(startTime),
       type: InfoType.USER_FILLS_BY_TIME,
+      reversed: true,
     };
 
     if (endTime) {
       params.endTime = Math.round(endTime);
+    }
+
+    if (aggregateByTime) {
+      params.aggregateByTime = aggregateByTime;
     }
 
     const response = await this.httpApi.makeRequest(params, 20);
@@ -126,12 +139,17 @@ export class GeneralInfoAPI {
     return rawResponse ? response : await this.symbolConversion.convertResponse(response);
   }
 
-  async getL2Book(coin: string, rawResponse: boolean = false, nSigFigs: number = 5, mantissa: number= undefined): Promise<L2Book> {
+  async getL2Book(
+    coin: string,
+    rawResponse: boolean = false,
+    nSigFigs: number = 5,
+    mantissa: number = undefined
+  ): Promise<L2Book> {
     const response = await this.httpApi.makeRequest({
       type: InfoType.L2_BOOK,
       coin: await this.symbolConversion.convertSymbol(coin, 'reverse'),
       nSigFigs,
-      mantissa
+      mantissa,
     });
     return rawResponse ? response : await this.symbolConversion.convertResponse(response);
   }

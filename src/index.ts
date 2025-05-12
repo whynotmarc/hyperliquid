@@ -17,6 +17,7 @@ export interface HyperliquidConfig {
   walletAddress?: string;
   vaultAddress?: string;
   maxReconnectAttempts?: number;
+  reactNative?: boolean;
 }
 
 export class Hyperliquid {
@@ -38,6 +39,7 @@ export class Hyperliquid {
   private enableWs: boolean;
   private baseUrl: string;
   private testnet: boolean;
+  private reactNative: boolean;
 
   constructor(params: HyperliquidConfig = {}) {
     const {
@@ -47,7 +49,14 @@ export class Hyperliquid {
       walletAddress,
       vaultAddress,
       maxReconnectAttempts,
+      reactNative = false,
     } = params;
+
+    // Set React Native flag in environment if specified
+    if (reactNative) {
+      // Force the environment detection for React Native
+      Object.defineProperty(environment, 'isReactNative', { value: true });
+    }
 
     // Browser-specific security warnings
     if (environment.isBrowser) {
@@ -62,6 +71,7 @@ export class Hyperliquid {
     }
 
     this.testnet = testnet;
+    this.reactNative = reactNative;
     this.baseUrl = testnet ? CONSTANTS.BASE_URLS.TESTNET : CONSTANTS.BASE_URLS.PRODUCTION;
     this.enableWs = enableWs;
     this.rateLimiter = new RateLimiter();

@@ -25,7 +25,6 @@ export class HttpApi {
   ): Promise<T> {
     try {
       await this.rateLimiter.waitForToken(weight);
-
       const response = await this.client.post(endpoint, payload);
 
       // Check if response data is null or undefined before returning
@@ -38,4 +37,9 @@ export class HttpApi {
       handleApiError(error);
     }
   }
+}
+
+export function processChainId(chainId: string): number {
+  if (!chainId.startsWith('0x')) throw new Error('Chain ID must be in hex format starting with 0x');
+  return Number(chainId.slice(2));
 }

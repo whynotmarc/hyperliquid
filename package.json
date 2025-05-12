@@ -63,7 +63,8 @@
     "prettier": "^3.5.3",
     "serve": "^14.0.0",
     "tsup": "^8.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "ws": "^8.18.2"
   },
   "directories": {
     "test": "tests"

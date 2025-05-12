@@ -184,6 +184,7 @@ export class SymbolConversion {
 
   async convertSymbol(symbol: string, mode: string = '', symbolMode: string = ''): Promise<string> {
     await this.ensureInitialized();
+
     let rSymbol: string;
     if (mode === 'reverse') {
       for (const [key, value] of this.exchangeToInternalNameMap.entries()) {
@@ -229,12 +230,14 @@ export class SymbolConversion {
     for (const [key, value] of Object.entries(obj)) {
       if (symbolsFields.includes(key)) {
         convertedObj[key] = await this.convertSymbol(value as string, '', symbolMode);
+        convertedObj.originalSymbol = value;
       } else if (key === 'side') {
         convertedObj[key] = value === 'A' ? 'sell' : value === 'B' ? 'buy' : value;
       } else {
         convertedObj[key] = await this.convertSymbolsInObject(value, symbolsFields, symbolMode);
       }
     }
+
     return convertedObj;
   }
 

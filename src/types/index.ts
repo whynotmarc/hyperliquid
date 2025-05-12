@@ -54,6 +54,7 @@ export interface AllMids {
 export type Meta = {
   universe: {
     name: string;
+    originalSymbol: string;
     szDecimals: number;
     maxLeverage: number;
     onlyIsolated?: boolean;
@@ -361,6 +362,7 @@ export type SpotMeta = {
 export type SpotAssetCtx = {
   circulatingSupply: string;
   coin: string;
+  originalSymbol: string;
   dayBaseVlm: string;
   dayNtlVlm: string;
   markPx: string;

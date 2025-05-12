@@ -1,6 +1,5 @@
 import * as CONSTANTS from '../types/constants';
 import { environment } from '../utils/environment';
-
 export class WebSocketClient {
   private ws: WebSocket | any = null; // 'any' to support both native WebSocket and ws package
   private url: string;
@@ -25,7 +24,10 @@ export class WebSocketClient {
     this.url = testnet ? CONSTANTS.WSS_URLS.TESTNET : CONSTANTS.WSS_URLS.PRODUCTION;
 
     // Determine which WebSocket implementation to use
-    if (environment.hasNativeWebSocket()) {
+    if (environment.isReactNative) {
+      // Use React Native's global WebSocket
+      this.WebSocketImpl = global.WebSocket;
+    } else if (environment.hasNativeWebSocket()) {
       this.WebSocketImpl = WebSocket;
     } else if (environment.isNode) {
       try {
@@ -61,7 +63,7 @@ export class WebSocketClient {
         if (!this.WebSocketImpl) {
           if (environment.isNode) {
             throw new Error(
-              'This SDK requires Node.js version 22 or higher as earlier versions do not have support for the NodeJS native websockets.'
+              'WebSocket support not available. Either use Node.js version 22+ which has native WebSocket support, or install the "ws" package with: npm install ws'
             );
           } else {
             throw new Error('WebSocket support is not available in this environment.');

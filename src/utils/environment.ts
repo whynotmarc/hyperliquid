@@ -10,24 +10,30 @@ export const environment = {
     typeof self === 'object' &&
     self.constructor &&
     self.constructor.name === 'ServiceWorkerGlobalScope',
+  isReactNative: typeof navigator !== 'undefined' && navigator.product === 'ReactNative',
 
   // Helper methods
   hasNativeWebSocket(): boolean {
+    if (this.isReactNative) return true;
+
     if (this.isBrowser || this.isWebWorker) {
       return 'WebSocket' in (this.isBrowser ? window : self);
     }
 
     if (this.isNode) {
-      // Node.js v23+ has native WebSocket support
+      // Node.js v22+ has native WebSocket support
       const nodeVersion = process.versions.node;
       const major = parseInt(nodeVersion.split('.')[0], 10);
-      return major >= 23;
+      return major >= 22;
     }
 
     return false;
   },
 
   supportsWebSocket(): boolean {
+    // React Native has its own WebSocket implementation
+    if (this.isReactNative) return true;
+
     // First check for native support
     if (this.hasNativeWebSocket()) {
       return true;
@@ -59,7 +65,8 @@ export const environment = {
     return (
       (this.isBrowser && 'crypto' in window) ||
       (this.isWebWorker && 'crypto' in self) ||
-      (this.isNode && 'crypto' in globalThis)
+      (this.isNode && 'crypto' in globalThis) ||
+      this.isReactNative
     );
   },
 
@@ -68,6 +75,7 @@ export const environment = {
     if (this.isBrowser) return window;
     if (this.isWebWorker || this.isServiceWorker) return self;
     if (this.isNode) return global;
+    if (this.isReactNative) return global;
     return globalThis;
   },
 };

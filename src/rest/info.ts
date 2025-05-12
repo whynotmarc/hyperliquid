@@ -105,10 +105,17 @@ export class InfoAPI {
     user: string,
     startTime: number,
     endTime: number,
+    aggregateByTime: boolean,
     rawResponse: boolean = false
   ): Promise<UserFills> {
     await this.parent.ensureInitialized();
-    return this.generalAPI.getUserFillsByTime(user, startTime, endTime, rawResponse);
+    return this.generalAPI.getUserFillsByTime(
+      user,
+      startTime,
+      endTime,
+      aggregateByTime,
+      rawResponse
+    );
   }
 
   async getUserRateLimit(user: string, rawResponse: boolean = false): Promise<UserRateLimit> {
@@ -125,7 +132,12 @@ export class InfoAPI {
     return this.generalAPI.getOrderStatus(user, oid, rawResponse);
   }
 
-  async getL2Book(coin: string, rawResponse: boolean = false, nSigFigs: number = 5, mantissa: number = undefined): Promise<L2Book> {
+  async getL2Book(
+    coin: string,
+    rawResponse: boolean = false,
+    nSigFigs: number = 5,
+    mantissa: number | undefined = undefined
+  ): Promise<L2Book> {
     await this.parent.ensureInitialized();
     return this.generalAPI.getL2Book(coin, rawResponse, nSigFigs, mantissa);
   }
